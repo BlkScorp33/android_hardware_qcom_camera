@@ -599,9 +599,8 @@ private:
     int32_t mOutputCount;
     bool mPreviewFrameSkipValid;
     cam_frame_idx_range_t mPreviewFrameSkipIdxRange;
+    uint64_t mCurrFrameCnt;
     QCameraVideoMemory *mVideoMem;
-    nsecs_t mLastAFScanTime;
-    nsecs_t mLastCaptureTime;
 };
 
 }; // namespace qcamera
