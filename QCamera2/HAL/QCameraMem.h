@@ -43,10 +43,6 @@ extern "C" {
 //OFFSET, SIZE, USAGE, TIMESTAMP, FORMAT
 #define VIDEO_METADATA_NUM_INTS 5
 
-#ifndef VIDEO_METADATA_NUM_COMMON_INTS
-#define VIDEO_METADATA_NUM_COMMON_INTS 1
-#endif
-
 namespace qcamera {
 
 class QCameraMemoryPool;
@@ -195,7 +191,7 @@ public:
     virtual camera_memory_t *getMemory(int index, bool metadata) const;
     virtual int getMatchBufIndex(const void *opaque, bool metadata) const;
     native_handle_t *updateNativeHandle(uint32_t index, bool metadata = true);
-    int closeNativeHandle(const void *data, bool metadata = true);
+    static int closeNativeHandle(const void *data, bool metadata = true);
 
 private:
     camera_memory_t *mMetadata[MM_CAMERA_MAX_NUM_FRAMES];

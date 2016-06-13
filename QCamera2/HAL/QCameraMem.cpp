@@ -997,7 +997,7 @@ camera_memory_t *QCameraStreamMemory::getMemory(int index, bool metadata) const
 *==========================================================================*/
 native_handle_t *QCameraVideoMemory::updateNativeHandle(uint32_t index, bool metadata)
 {
-    if (index >= mMetaBufCount || (!metadata && index >= (uint32_t)mBufferCount)) {
+    if (index >= mMetaBufCount || (!metadata && index >= mBufferCount)) { 
         return NULL;
     }
 
@@ -1035,29 +1035,22 @@ int QCameraVideoMemory::closeNativeHandle(const void *data, bool metadata)
     int32_t index = -1;
 
 #ifdef USE_MEDIA_EXTENSIONS
-    camera_memory_t *video_mem = NULL;
+    camera_memory_t *video_mem = (camera_memory_t *)data;
+
+    if(video_mem == NULL) {
+        ALOGE("video_mem NULL. Failed");
+        return BAD_VALUE;
+    }
     if (metadata) {
-        index = getMatchBufIndex(data, metadata);
-        if (index < 0) {
-            ALOGE("Invalid buffer");
-            return BAD_VALUE;
-        }
-        video_mem = getMemory(index, metadata);
-        media_metadata_buffer * packet = NULL;
-        if (video_mem != NULL) {
-           packet = (media_metadata_buffer *)video_mem->data;
-        }
-        if (packet != NULL && packet->eType ==
-            kMetadataBufferTypeNativeHandleSource) {
+        media_metadata_buffer *packet =
+            (media_metadata_buffer *)video_mem->data;
+        if (packet->eType == kMetadataBufferTypeNativeHandleSource) {
             native_handle_close(packet->pHandle);
             native_handle_delete(packet->pHandle);
             packet->pHandle = NULL;
-        } else {
-            ALOGE("Invalid Data. Could not release");
-            return BAD_VALUE;
         }
     } else {
-        ALOGE("Warning: Not of type video meta buffer");
+        ALOGE("Not of type video meta buffer. Failed");
         return BAD_VALUE;
     }
 #endif
@@ -1166,7 +1159,7 @@ int QCameraVideoMemory::allocate(int count, int size)
 
     for (int i = 0; i < count; i ++) {
         mMetadata[i] = mGetMemory(-1,
-                sizeof(media_metadata_buffer), 1, mCallbackCookie);
+                sizeof(media_metadata_buffer), 1, this);
         if (!mMetadata[i]) {
             ALOGE("allocation of video metadata failed.");
             for (int j = 0; j <= i-1; j ++)
@@ -1236,7 +1229,7 @@ int QCameraVideoMemory::allocateMore(int count, int size)
 
     for (int i = mBufferCount; i < count + mBufferCount; i ++) {
         mMetadata[i] = mGetMemory(-1,
-                sizeof(media_metadata_buffer), 1, mCallbackCookie);
+                sizeof(media_metadata_buffer), 1, this);
         if (!mMetadata[i]) {
             ALOGE("allocation of video metadata failed.");
             for (int j = mBufferCount; j <= i-1; j ++) {

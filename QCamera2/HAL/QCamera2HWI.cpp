@@ -557,15 +557,7 @@ void QCamera2HardwareInterface::release_recording_frame(
     ALOGD("%s: E", __func__);
 
     //Close and delete duplicated native handle and FD's
-    if ((hw->mVideoMem != NULL)&&(hw->mStoreMetaDataInFrame>0)) {
-        ret = hw->mVideoMem->closeNativeHandle(opaque,TRUE);
-        if (ret != NO_ERROR) {
-            ALOGE("Invalid video metadata");
-            return;
-        }
-    } else {
-        ALOGW("Possible FD leak. Release recording called after stop");
-    }
+    QCameraVideoMemory::closeNativeHandle(opaque, hw->mStoreMetaDataInFrame > 0);
 
     hw->lockAPI();
     qcamera_api_result_t apiResult;
