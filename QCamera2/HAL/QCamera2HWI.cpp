@@ -1061,6 +1061,8 @@ QCamera2HardwareInterface::QCamera2HardwareInterface(int cameraId)
       mPreviewFrameSkipValid(0),
       mCurrFrameCnt(0),
       mVideoMem(NULL)
+      mLastAFScanTime(0),
+      mLastCaptureTime(0)
 {
     mCameraDevice.common.tag = HARDWARE_DEVICE_TAG;
     mCameraDevice.common.version = HARDWARE_DEVICE_API_VERSION(1, 0);
